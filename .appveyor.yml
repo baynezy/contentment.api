@@ -5,17 +5,6 @@ init:
 - git config --global core.autocrlf true
 install:
 - ps: npm install -g markdownlint-cli
-build_script:
+before_build:
   - cmd: >-
-      cd %BUILD_DIR%
-
       markdownlint .
-
-      dotnet restore
-      
-      dotnet build
-test_script:
-  - cmd: >-
-      dotnet test .\test\Contentment.Api.Test\Contentment.Api.Test.csproj --logger "trx;LogFileName=results.trx"
-after_test:
-  - ps: ./uploadTestResults.ps1
