@@ -6,6 +6,6 @@ param([string]$buildVersion, [string]$currentBranch, [string]$username, [string]
 	docker build -t contentmentcms/contentment.api:$($buildVersion).beta .
 
 	Write-Host "pushing Docker image"
-	docker login -u=$($username) -p=$($password)
+	docker login -u="$($username)" -p="$($password)"
 	docker push contentmentcms/contentment.api:$($buildVersion).beta
 #}
