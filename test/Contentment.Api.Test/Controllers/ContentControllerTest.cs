@@ -16,12 +16,20 @@ namespace Contentment.Api.Test.Controllers {
 	[TestFixture]
 	public class ContentControllerTest {
 
+		#region Controller
+
 		[Test]
 		public void ContentController_ImplementsController() {
 			var controller = CreateController();
 
 			Assert.That(controller, Is.InstanceOf<Controller>());
 		}
+
+		#endregion
+
+		#region PostContent
+
+		#region ValidContent
 
 		[Test]
 		public void PostContent_WhenCalledWithValidContent_ThenReturnJsonResult() {
@@ -81,6 +89,10 @@ namespace Contentment.Api.Test.Controllers {
 			Assert.That(newContent.Body, Is.EqualTo(content.Body));
 		}
 
+		#endregion
+
+		#region InvalidContent
+
 		[Test]
 		public void PostContent_WhenCalledWithoutRequiredFields_ThenReturn400Error() {
 			var invalidContent = ContentHelper.InvalidContent();
@@ -126,6 +138,35 @@ namespace Contentment.Api.Test.Controllers {
 			Assert.That(details["Title"][0].Message, Is.EqualTo("The Title field is required."));
 			Assert.That(details["Body"][0].Message, Is.EqualTo("The Body field is required."));
 		}
+
+		#endregion
+
+		#endregion
+
+		#region GetContent
+
+		[Test]
+		public void GetContent_WhenCalled_ThenReturnJsonResult() {
+			var controller = CreateController();
+			const string contentId = "qwerty";
+
+			var result = controller.GetContent(contentId);
+
+			Assert.That(result, Is.InstanceOf<JsonResult>());
+		}
+
+		[Test]
+		public void GetContent_WhenCalled_ThenCallIContentService() {
+			var contentService = new Mock<IContentService>();
+			var controller = CreateController(contentService.Object);
+			const string contentId = "qwerty";
+
+			controller.GetContent(contentId);
+
+			contentService.Verify(f => f.FindById(contentId), Times.Once);
+		}
+
+		#endregion
 
 		private ContentController CreateController(IContentService contentService = null)
 		{

@@ -20,5 +20,10 @@ namespace Contentment.Api.Services {
 				Title = content.Title
 			};
 		}
+
+		public Content FindById(string contentId)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
