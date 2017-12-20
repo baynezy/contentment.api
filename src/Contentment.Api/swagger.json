@@ -72,6 +72,32 @@
                     }
                 }
             }
+        },
+        "/content/{contentId}": {
+            "get": {
+                "description": "Get a specific piece of content",
+                "parameters": [{
+                    "name": "contentId",
+                    "in": "path",
+                    "description": "Unique content Id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Content representation",
+                        "content": {
+                            "application/vnd+contentment+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Content"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
