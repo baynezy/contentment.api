@@ -10,9 +10,10 @@ using Contentment.Api.Domain;
 namespace Contentment.Api.IntegrationTest.Controllers {
 	[TestFixture]
 	public class ContentControllerTest : BaseIntegrationController {
+		#region PostContent
 		[Test]
 		public async Task PostContent_WhenCalledWithValidContent_ThenShouldReturnCreatedContent() {
-			var validContent = ContentHelper.ValidContent();
+			var validContent = ContentHelper.ValidContentCreate();
 			var content = new StringContent(JsonConvert.SerializeObject(validContent), Encoding.UTF8, ContentTypes.VENDOR_MIME_TYPE);
 			var response = await GetClient().PostAsync("/content", content);
 			var jsonString = await response.Content.ReadAsStringAsync();
@@ -26,7 +27,7 @@ namespace Contentment.Api.IntegrationTest.Controllers {
 
 		[Test]
 		public async Task PostContent_WhenCalledWithValidContent_ThenShouldReturnVendorContentType() {
-			var validContent = ContentHelper.ValidContent();
+			var validContent = ContentHelper.ValidContentCreate();
 			var content = new StringContent(JsonConvert.SerializeObject(validContent), Encoding.UTF8, ContentTypes.VENDOR_MIME_TYPE);
 			var response = await GetClient().PostAsync("/content", content);
 
@@ -38,7 +39,7 @@ namespace Contentment.Api.IntegrationTest.Controllers {
 
 		[Test]
 		public async Task PostContent_WhenCalledWithInvalidContent_ThenShouldReturnVendorContentType() {
-			var validContent = ContentHelper.InvalidContent();
+			var validContent = ContentHelper.InvalidContentCreate();
 			var content = new StringContent(JsonConvert.SerializeObject(validContent), Encoding.UTF8, ContentTypes.VENDOR_MIME_TYPE);
 			var response = await GetClient().PostAsync("/content", content);
 
@@ -47,5 +48,25 @@ namespace Contentment.Api.IntegrationTest.Controllers {
 			Assert.That(headers.Contains("Content-Type"), Is.True);
 			Assert.That(headers.ContentType.MediaType, Is.EqualTo(ContentTypes.VENDOR_MIME_TYPE_ERROR));
 		}
+
+		[Test]
+		public async Task PostContent_WhenCalledWithValidContent_ThenShouldReturnLocationHeader() {
+			var validContent = ContentHelper.ValidContentCreate();
+			var content = new StringContent(JsonConvert.SerializeObject(validContent), Encoding.UTF8, ContentTypes.VENDOR_MIME_TYPE);
+			var response = await GetClient().PostAsync("/content", content);
+
+			Assert.That(response.Headers.Location, Is.Not.Null);
+		}
+
+		#endregion
+
+		#region GetContent
+		[Test]
+		public async Task GetContent_WhenCalled_ThenShouldReturnVendorContentType() {
+			var validContent = ContentHelper.ValidContentCreate();
+			var content = new StringContent(JsonConvert.SerializeObject(validContent), Encoding.UTF8, ContentTypes.VENDOR_MIME_TYPE);
+			var response = await GetClient().PostAsync("/content", content);
+		}
+		#endregion
 	}
 }

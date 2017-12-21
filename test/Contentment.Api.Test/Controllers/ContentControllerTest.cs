@@ -34,7 +34,7 @@ namespace Contentment.Api.Test.Controllers {
 		[Test]
 		public void PostContent_WhenCalledWithValidContent_ThenReturnJsonResult() {
 			var controller = CreateController();
-			var content = ContentHelper.ValidContent();
+			var content = ContentHelper.ValidContentCreate();
 
 			var result = controller.PostContent(content);
 
@@ -44,7 +44,7 @@ namespace Contentment.Api.Test.Controllers {
 		[Test]
 		public void PostContent_WhenCalledWithValidContent_ThenReturn201Response() {
 			var controller = CreateController();
-			var content = ContentHelper.ValidContent();
+			var content = ContentHelper.ValidContentCreate();
 
 			var result = controller.PostContent(content);
 
@@ -55,7 +55,7 @@ namespace Contentment.Api.Test.Controllers {
 		public void PostContent_WhenCalledWithValidContent_ThenCallIContentService() {
 			var mockService = new Mock<IContentService>();
 			var controller = CreateController(mockService.Object);
-			var content = ContentHelper.ValidContent();
+			var content = ContentHelper.ValidContentCreate();
 
 			controller.PostContent(content);
 
@@ -64,7 +64,7 @@ namespace Contentment.Api.Test.Controllers {
 
 		[Test]
 		public void PostContent_WhenCalledWithValidContent_ThenReturnContentFromIContentService() {
-			var content = ContentHelper.ValidContent();
+			var content = ContentHelper.ValidContentCreate();
 			const string expectedId = "qwerty";
 			var expectedCreatedDateTime = new DateTime(2017,12,19,6,49,0);
 			var mockService = new Mock<IContentService>();
@@ -95,7 +95,7 @@ namespace Contentment.Api.Test.Controllers {
 
 		[Test]
 		public void PostContent_WhenCalledWithoutRequiredFields_ThenReturn400Error() {
-			var invalidContent = ContentHelper.InvalidContent();
+			var invalidContent = ContentHelper.InvalidContentCreate();
 			var controller = CreateController();
 
 			ValidateModel(invalidContent, controller);
@@ -107,7 +107,7 @@ namespace Contentment.Api.Test.Controllers {
 
 		[Test]
 		public void PostContent_WhenCalledWithoutRequiredFields_ThenReturnClientErrorJson() {
-			var invalidContent = ContentHelper.InvalidContent();
+			var invalidContent = ContentHelper.InvalidContentCreate();
 			var controller = CreateController();
 
 			ValidateModel(invalidContent, controller);
@@ -121,7 +121,7 @@ namespace Contentment.Api.Test.Controllers {
 		[Test]
 		public void PostContent_WhenCalledWithoutRequiredFields_ThenReturnPopulatedClientErrorJson() {
 			const int expectedErrorCount = 2;
-			var invalidContent = ContentHelper.InvalidContent();
+			var invalidContent = ContentHelper.InvalidContentCreate();
 			var controller = CreateController();
 
 			ValidateModel(invalidContent, controller);
@@ -164,6 +164,24 @@ namespace Contentment.Api.Test.Controllers {
 			controller.GetContent(contentId);
 
 			contentService.Verify(f => f.FindById(contentId), Times.Once);
+		}
+
+		[Test]
+		public void GetContent_WhenCalled_ThenReturnContentFromIContentService() {
+			var contentService = new Mock<IContentService>();
+			const string contentId = "qwerty";
+			var content = ContentHelper.ValidContent(contentId);
+			contentService.Setup(m => m.FindById(contentId)).Returns(content);
+			var controller = CreateController(contentService.Object);
+
+			var result = controller.GetContent(contentId);
+			var viewModel = result.Value as Content;
+
+			Assert.That(viewModel, Is.Not.Null);
+			Assert.That(viewModel.Id, Is.EqualTo(content.Id));
+			Assert.That(viewModel.Body, Is.EqualTo(content.Body));
+			Assert.That(viewModel.CreatedDateTime, Is.EqualTo(content.CreatedDateTime));
+			Assert.That(viewModel.Title, Is.EqualTo(content.Title));
 		}
 
 		#endregion
