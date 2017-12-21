@@ -20,7 +20,7 @@ namespace Contentment.Api.Test.Services {
 			var idGenerator = new Mock<IIdGenerator>();
 			idGenerator.Setup(m => m.Generate()).Returns(expectedId);
 			var service = CreateService(idGenerator.Object);
-			var validContent = ContentHelper.ValidContent();
+			var validContent = ContentHelper.ValidContentCreate();
 
 			var newContent = service.Create(validContent);
 

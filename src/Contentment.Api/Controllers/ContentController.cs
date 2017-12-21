@@ -41,8 +41,8 @@ namespace Contentment.Api.Controllers {
 		[HttpGet("/content/{contentId}")]
 		public JsonResult GetContent(string contentId)
 		{
-			_contentService.FindById(contentId);
-			return Json(new {name = "Simon"});
+			var content = _contentService.FindById(contentId);
+			return Json(content);
 		}
 	}
 }
