@@ -32,13 +32,13 @@ namespace Contentment.Api.Test.Controllers {
 		#region ValidContent
 
 		[Test]
-		public void PostContent_WhenCalledWithValidContent_ThenReturnJsonResult() {
+		public void PostContent_WhenCalledWithValidContent_ThenReturnJsonCreatedResult() {
 			var controller = CreateController();
 			var content = ContentHelper.ValidContentCreate();
 
 			var result = controller.PostContent(content);
 
-			Assert.That(result, Is.InstanceOf<JsonResult>());
+			Assert.That(result, Is.InstanceOf<JsonCreatedResult>());
 		}
 
 		[Test]
@@ -46,8 +46,9 @@ namespace Contentment.Api.Test.Controllers {
 			var controller = CreateController();
 			var content = ContentHelper.ValidContentCreate();
 
-			var result = controller.PostContent(content);
+			var result = controller.PostContent(content) as JsonCreatedResult;
 
+			Assert.That(result, Is.Not.Null);
 			Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
 		}
 
@@ -78,7 +79,7 @@ namespace Contentment.Api.Test.Controllers {
 			);
 			var controller = CreateController(mockService.Object);
 
-			var result = controller.PostContent(content);
+			var result = controller.PostContent(content) as JsonCreatedResult;
 
 			var newContent = result.Value as Content;
 
@@ -100,7 +101,7 @@ namespace Contentment.Api.Test.Controllers {
 
 			ValidateModel(invalidContent, controller);
 
-			var result = controller.PostContent(invalidContent);
+			var result = controller.PostContent(invalidContent) as JsonResult;
 
 			Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
 		}
@@ -112,7 +113,7 @@ namespace Contentment.Api.Test.Controllers {
 
 			ValidateModel(invalidContent, controller);
 
-			var result = controller.PostContent(invalidContent);
+			var result = controller.PostContent(invalidContent) as JsonResult;
 			var error = result.Value as ClientError;
 
 			Assert.That(error, Is.Not.Null);
@@ -126,7 +127,7 @@ namespace Contentment.Api.Test.Controllers {
 
 			ValidateModel(invalidContent, controller);
 
-			var result = controller.PostContent(invalidContent);
+			var result = controller.PostContent(invalidContent) as JsonResult;
 			var error = result.Value as ClientError;
 
 			Assert.That(error.Code, Is.EqualTo(ErrorCodes.INVALID_CONTENT));

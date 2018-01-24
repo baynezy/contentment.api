@@ -16,23 +16,22 @@ namespace Contentment.Api.Controllers {
 		}
 
 		[HttpPost("/content")]
-		public JsonResult PostContent([FromBody] ContentCreate content)
+		public ActionResult PostContent([FromBody] ContentCreate content)
 		{
-			JsonResult result;
+			ActionResult result;
 			if (ModelState.IsValid) {
 				var newContent = _contentService.Create(content);
-				result = Json(newContent);
-				result.StatusCode = (int)HttpStatusCode.Created;
-				result.ContentType = ContentTypes.VENDOR_MIME_TYPE;
+				result = new JsonCreatedResult(newContent, ContentTypes.VENDOR_MIME_TYPE, "/something");
 			}
 			else {
 				var error = new ClientError(ModelState){
 					Code = ErrorCodes.INVALID_CONTENT,
 					Description = "Content is invalid"
 				};
-				result = Json(error);
-				result.StatusCode = (int)HttpStatusCode.BadRequest;
-				result.ContentType = ContentTypes.VENDOR_MIME_TYPE_ERROR;
+				var json = Json(error);
+				json.StatusCode = (int)HttpStatusCode.BadRequest;
+				json.ContentType = ContentTypes.VENDOR_MIME_TYPE_ERROR;
+				result = json;
 			}
 
 			return result;
