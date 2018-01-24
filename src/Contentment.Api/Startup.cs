@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contentment.Api.Domain;
+using Contentment.Api.Formatters;
 using Contentment.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,7 +44,10 @@ namespace Contentment.Api
 						MediaTypeHeaderValue.Parse(ContentTypes.VENDOR_MIME_TYPE)
 					);
 				}
-			);
+			)
+			.AddMvcOptions(options => {
+				options.OutputFormatters.Add(new VendorContentTypeJsonOutputFormatter());
+			});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
