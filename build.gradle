@@ -1,6 +1,24 @@
+buildscript {
+	ext {
+		spring_boot_version = '1.5.6.RELEASE'
+		swagger_version = '2.4.0'
+		gson_fire_version = '1.8.3'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("io.swagger:swagger-codegen:$swagger_version")
+	}
+}
+
 plugins {
     id 'java'
+	id 'org.springframework.boot' version '2.1.1.RELEASE'
 }
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
 
 version '1.0-SNAPSHOT'
 
@@ -10,6 +28,71 @@ repositories {
     mavenCentral()
 }
 
+import io.swagger.codegen.config.CodegenConfigurator
+import io.swagger.codegen.DefaultGenerator
+
+def swaggerFile = file 'api/api.json'
+def swaggerInput = swaggerFile.getAbsolutePath()
+def swaggerOutputDir = file 'build/swagger'
+
+task generateApi {
+	inputs.file(swaggerInput)
+	outputs.dir(swaggerOutputDir)
+	doLast {
+		def config = new CodegenConfigurator()
+		config.setInputSpec(swaggerInput)
+		config.setOutputDir(swaggerOutputDir.path)
+		config.setLang('spring')
+		config.setAdditionalProperties([
+			'modelPackage'  : 'io.contentment.model',
+			'apiPackage'    : 'io.contentment.api',
+			'interfaceOnly' : true,
+			'dateLibrary'	: 'java8'
+		])
+		new DefaultGenerator().opts(config.toClientOptInput()).generate()
+	}
+}
+
+clean.doFirst {
+	delete(swaggerOutputDir)
+}
+
+configurations {
+	swagger
+}
+
+springBoot {
+	mainClassName = 'io.containment.Application'
+}
+
+sourceSets {
+	swagger {
+		compileClasspath = configurations.swaggerCompile
+		java {
+			srcDir file("${project.buildDir.path}/swagger/src/main/java")
+		}
+	}
+	main {
+		compileClasspath += swagger.output
+		runtimeClasspath += swagger.output
+	}
+	test {
+		compileClasspath += swagger.output
+		runtimeClasspath += swagger.output
+	}
+}
+
+compileSwaggerJava.dependsOn generateApi
+classes.dependsOn swaggerClasses
+compileJava.dependsOn compileSwaggerJava
+
 dependencies {
+	swaggerCompile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
+	swaggerCompile 'io.swagger:swagger-annotations:1.5.16'
+	swaggerCompile "io.gsonfire:gson-fire:$gson_fire_version"
+
+	compile "io.swagger:swagger-codegen:$swagger_version"
+	compile "io.gsonfire:gson-fire:$gson_fire_version"
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

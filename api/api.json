@@ -1,0 +1,42 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "A simple API for managing content",
+		"version": "0.0.1",
+		"title": "Contentment API",
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		}
+	},
+	"paths": {
+		"/info": {
+			"get": {
+				"description": "Information for the current status of the API",
+				"operationId": "getInfo",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "API Information",
+						"schema": {
+							"$ref": "#/definitions/ApiInfo"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"ApiInfo": {
+			"type": "object",
+			"properties": {
+				"version": {
+					"type": "string",
+					"pattern": "^/d+\\./d+\\./d+$"
+				}
+			}
+		}
+	}
+}
