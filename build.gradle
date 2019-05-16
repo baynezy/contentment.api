@@ -9,6 +9,7 @@ buildscript {
 	}
 	dependencies {
 		classpath("io.swagger:swagger-codegen:$swagger_version")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
 	}
 }
 
@@ -18,11 +19,19 @@ plugins {
 }
 
 apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
+bootJar {
+	baseName = 'io-contentment-api'
+	version =  '0.1.0'
+}
 
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -47,7 +56,8 @@ task generateApi {
 			'modelPackage'  : 'io.contentment.model',
 			'apiPackage'    : 'io.contentment.api',
 			'interfaceOnly' : true,
-			'dateLibrary'	: 'java8'
+			'dateLibrary'	: 'java8',
+			'library'		: 'spring-mvc'
 		])
 		new DefaultGenerator().opts(config.toClientOptInput()).generate()
 	}
@@ -59,10 +69,11 @@ clean.doFirst {
 
 configurations {
 	swagger
+	compile.exclude group:'ch.qos.logback'
 }
 
 springBoot {
-	mainClassName = 'io.containment.Application'
+	mainClassName = 'io.contentment.Application'
 }
 
 sourceSets {
@@ -87,10 +98,11 @@ classes.dependsOn swaggerClasses
 compileJava.dependsOn compileSwaggerJava
 
 dependencies {
-	swaggerCompile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
 	swaggerCompile 'io.swagger:swagger-annotations:1.5.16'
 	swaggerCompile "io.gsonfire:gson-fire:$gson_fire_version"
+	swaggerCompile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
 
+	compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
 	compile "io.swagger:swagger-codegen:$swagger_version"
 	compile "io.gsonfire:gson-fire:$gson_fire_version"
 
